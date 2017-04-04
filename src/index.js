@@ -23,7 +23,6 @@ var particles = require('./3d/particles');
 var lights = require('./3d/lights');
 var floor = require('./3d/floor');
 
-
 var undef;
 var _gui;
 var _stats;
@@ -45,6 +44,11 @@ var _bgColor;
 var _logo;
 var _instruction;
 var _footerItems;
+
+// get dem.things to talk to dat.gui!
+var DemThings = require('./../../dem.things/index.js').default;
+var firebase = require('firebase')
+firebase.initializeApp(require('./fbconfig.js').config);
 
 function init() {
 
@@ -137,6 +141,7 @@ function init() {
 
     var postprocessingGui = _gui.addFolder('Post-Processing');
     postprocessingGui.add(settings, 'fxaa').listen();
+
     motionBlur.maxDistance = 120;
     motionBlur.motionMultiplier = 7 ;
     motionBlur.linesRenderTargetScale = settings.motionBlurQualityMap[settings.query.motionBlurQuality];
@@ -168,6 +173,9 @@ function init() {
             control.domElement.parentNode.style.opacity = flag ? 1 : 0.1;
         }
     }
+
+    // we're done making our gui so lets get dem.things setup!
+    var _demThings = new DemThings(firebase, _gui, dat.controllers);
 
     var preventDefault = function(evt){evt.preventDefault();this.blur();};
     Array.prototype.forEach.call(_gui.domElement.querySelectorAll('input[type="checkbox"],select'), function(elem){

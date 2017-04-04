@@ -16,7 +16,7 @@ function runBuild (f) {
       debug: false,
       // noparse: [ 'three' ]
     });
-    // b.transform(require('babelify').configure({ presets: 'es2015' }));
+    b.transform(require('babelify').configure({ presets: 'es2015' }));
     b.plugin(require('bundle-collapser/plugin'));
     var transforms = [['glslify', { global: true }]];
     transforms.forEach(function (t) {

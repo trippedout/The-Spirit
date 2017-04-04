@@ -43,4 +43,9 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
+.idea/
+
 /node_modules
+
+# config file with my firebase info
+src/fbconfig.js

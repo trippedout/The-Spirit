@@ -16,10 +16,11 @@ budo(entryPath, {
         return fs.createReadStream(html);
     },
     browserify: {
-        transform: [
-            [ 'installify', { save: true } ],
-            ['glslify', { global: true }]
-        ]
+      transform: [
+        ['installify', {save: true}],
+        ['glslify', {global: true}],
+        ["babelify", {"presets": ["es2015"]}]
+      ]
     }
 }).on('connect', function(ev) {
     const uri = ev.uri + 'index.html';
