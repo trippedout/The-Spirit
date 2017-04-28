@@ -46,9 +46,12 @@ var _instruction;
 var _footerItems;
 
 // get dem.things to talk to dat.gui!
-var DemThings = require('./../../dem.things/index.js').default;
+
 var firebase = require('firebase')
 firebase.initializeApp(require('./fbconfig.js').config);
+
+var DatFire = require('./../../dem.things/index.js').default;
+var _datFire = new DatFire(firebase.database());
 
 function init() {
 
@@ -122,20 +125,22 @@ function init() {
             window.location.reload();
         }
     });
-    simulatorGui.add(settings, 'speed', 0, 3).listen();
-    simulatorGui.add(settings, 'dieSpeed', 0.0005, 0.05).listen();
-    simulatorGui.add(settings, 'radius', 0.2, 3);
-    simulatorGui.add(settings, 'curlSize', 0.001, 0.05).listen();
-    simulatorGui.add(settings, 'attraction', -2, 2);
+
+    // get references to all the controllers that we want to add to dat.fire
+    var guiSpeed = simulatorGui.add(settings, 'speed', 0, 3).listen();
+    var guiDieSpeed = simulatorGui.add(settings, 'dieSpeed', 0.0005, 0.05).listen();
+    var guiRadius = simulatorGui.add(settings, 'radius', 0.2, 3);
+    var guiCurlSize = simulatorGui.add(settings, 'curlSize', 0.001, 0.05).listen();
+    var guiAttraction = simulatorGui.add(settings, 'attraction', -2, 2);
     simulatorGui.add(settings, 'followMouse').name('follow mouse');
     simulatorGui.open();
 
     var renderingGui = _gui.addFolder('Rendering');
-    renderingGui.add(settings, 'shadowDarkness', 0, 1).name('shadow');
+    var guiShadow = renderingGui.add(settings, 'shadowDarkness', 0, 1).name('shadow');
     renderingGui.add(settings, 'useTriangleParticles').name('new particle');
-    renderingGui.addColor(settings, 'color1').name('base Color');
-    renderingGui.addColor(settings, 'color2').name('fade Color');
-    renderingGui.addColor(settings, 'bgColor').name('background Color');
+    var guiBaseColor = renderingGui.addColor(settings, 'color1').name('base Color');
+    var guiFadeColor = renderingGui.addColor(settings, 'color2').name('fade Color');
+    var guiBackgroundColor = renderingGui.addColor(settings, 'bgColor').name('background Color');
     renderingGui.open();
 
 
@@ -147,12 +152,12 @@ function init() {
     motionBlur.linesRenderTargetScale = settings.motionBlurQualityMap[settings.query.motionBlurQuality];
     var motionBlurControl = postprocessingGui.add(settings, 'motionBlur');
     var motionMaxDistance = postprocessingGui.add(motionBlur, 'maxDistance', 1, 300).name('motion distance').listen();
-    var motionMultiplier = postprocessingGui.add(motionBlur, 'motionMultiplier', 0.1, 15).name('motion multiplier').listen();
+    var guiMotionMultiplier = postprocessingGui.add(motionBlur, 'motionMultiplier', 0.1, 15).name('motion multiplier').listen();
     var motionQuality = postprocessingGui.add(settings.query, 'motionBlurQuality', settings.motionBlurQualityList).name('motion quality').onChange(function(val){
         motionBlur.linesRenderTargetScale = settings.motionBlurQualityMap[val];
         motionBlur.resize();
     });
-    var controlList = [motionMaxDistance, motionMultiplier, motionQuality];
+    var controlList = [motionMaxDistance, guiMotionMultiplier, motionQuality];
     motionBlurControl.onChange(enableGuiControl.bind(this, controlList));
     enableGuiControl(controlList, settings.motionBlur);
 
@@ -174,8 +179,15 @@ function init() {
         }
     }
 
-    // we're done making our gui so lets get dem.things setup!
-    var _demThings = new DemThings(firebase, _gui, dat.controllers);
+    // we're done making our gui so lets init dat.fire!
+    // do it simply:
+    //_datFire.initSimple(_gui);
+
+    // or get custom:
+    _datFire.initWithIndividualControllers([
+      guiSpeed, guiDieSpeed, guiRadius, guiCurlSize, guiAttraction,
+      guiShadow, guiMotionMultiplier, guiBaseColor, guiFadeColor, guiBackgroundColor
+    ]);
 
     var preventDefault = function(evt){evt.preventDefault();this.blur();};
     Array.prototype.forEach.call(_gui.domElement.querySelectorAll('input[type="checkbox"],select'), function(elem){
