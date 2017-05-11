@@ -50,7 +50,7 @@ var _footerItems;
 var firebase = require('firebase')
 firebase.initializeApp(require('./fbconfig.js').config);
 
-var DatFire = require('./../../dem.things/index.js').default;
+var DatFire = require('dat.fire').default;
 var _datFire = new DatFire(firebase.database());
 
 function init() {
@@ -180,14 +180,16 @@ function init() {
     }
 
     // we're done making our gui so lets init dat.fire!
-    // do it simply:
-    //_datFire.initSimple(_gui);
+    _datFire.init(_gui,
+      [
+          guiSpeed, guiDieSpeed, guiRadius, guiCurlSize, guiAttraction,
+          guiShadow, guiMotionMultiplier, guiBaseColor, guiFadeColor, guiBackgroundColor
+      ],
+      { 'simpleGui': true }
+    );
 
-    // or get custom:
-    _datFire.initWithIndividualControllers([
-      guiSpeed, guiDieSpeed, guiRadius, guiCurlSize, guiAttraction,
-      guiShadow, guiMotionMultiplier, guiBaseColor, guiFadeColor, guiBackgroundColor
-    ]);
+    // keep it moving on screen all the time, finger touch will control camera
+    settings.followMouse = false
 
     var preventDefault = function(evt){evt.preventDefault();this.blur();};
     Array.prototype.forEach.call(_gui.domElement.querySelectorAll('input[type="checkbox"],select'), function(elem){
@@ -215,6 +217,12 @@ function _onKeyUp(evt) {
     if(evt.keyCode === 32) {
         settings.speed = settings.speed === 0 ? 1 : 0;
         settings.dieSpeed = settings.dieSpeed === 0 ? 0.015 : 0;
+    } else if(evt.keyCode === 70) {
+      if (document.webkitFullscreenEnabled) {
+        if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen();
+        }
+      }
     }
 }
 
