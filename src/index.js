@@ -50,8 +50,10 @@ var _footerItems;
 var firebase = require('firebase')
 firebase.initializeApp(require('./fbconfig.js').config);
 
-var DatFire = require('dat.fire').default;
+var DatFire = require('./fire/index').default;
 var _datFire = new DatFire(firebase.database());
+
+console.log('fuck u')
 
 function init() {
 
