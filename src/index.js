@@ -48,12 +48,12 @@ var _footerItems;
 // get dem.things to talk to dat.gui!
 
 var firebase = require('firebase')
+
+// put all your firebase json data into a file and use to initialize
 firebase.initializeApp(require('./fbconfig.js').config);
 
-var DatFire = require('./fire/index').default;
+var DatFire = require('dat.fire').default;
 var _datFire = new DatFire(firebase.database());
-
-console.log('fuck u')
 
 function init() {
 

@@ -29,6 +29,7 @@
     "browserify": "^13.0.0",
     "budo": "^7.1.0",
     "bundle-collapser": "^1.2.1",
+    "dat.fire": "^0.1.0",
     "dirlist": "^1.0.2",
     "glslify": "^5.0.2",
     "hasha": "^2.2.0",
